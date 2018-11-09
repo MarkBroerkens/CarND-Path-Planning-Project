@@ -53,6 +53,8 @@ public:
     double safetyDistance(double speed_mps);
     json path();
     double centerLaneD(int lane);
+    double safetyCosts(int lane);
+    double wrappedDistance(double s1, double s2);
 };
 
 
