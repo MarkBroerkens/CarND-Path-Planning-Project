@@ -46,14 +46,31 @@ double PathPlanner::laneSpeed(int lane) {
   double lane_speed = milesPerHourToMetersPerSecond(MAX_SPEED_MPH);
   for (Vehicle vehicle : vehicles) {
     if (vehicle.lane == lane) {
-      double distance = vehicle.s - ego.s;
-      if ((distance > 0) && distance < FRONT_SENSOR_RANGE_M
-          && vehicle.speed < lane_speed) {
+      double distance_to_vehicle_ahead = wrappedDistance(ego.s, vehicle.s);
+      double distance_to_vehicle_behind = wrappedDistance(vehicle.s, ego.s);
+      //std::cout << "distance front: " << distance_to_vehicle_ahead << std::endl;
+      //std::cout << "distance back: " << distance_to_vehicle_behind << std::endl;
+      if (((distance_to_vehicle_ahead < FRONT_SENSOR_RANGE_M) || (distance_to_vehicle_behind < 10))
+          && (vehicle.speed < lane_speed)) {
         lane_speed = vehicle.speed;
       }
     }
   }
   return lane_speed;
+}
+
+vector<Vehicle> PathPlanner::vehiclesInFrontInLane(int lane) {
+  vector<Vehicle> vehicles_in_lane;
+  for (Vehicle vehicle : vehicles) {
+    if (vehicle.lane == lane) {
+      vehicles_in_lane.push_back(vehicle);
+    }
+  }
+  std::sort( vehicles_in_lane.begin( ), vehicles_in_lane.end( ), [ ]( const Vehicle& lhs, const Vehicle& rhs )
+  {
+     return wrappedDistance(ego.s, lhs.s) < wrappedDistance(ego.s, rhs.s);
+  });
+  return vehicles_in_lane;
 }
 
 double PathPlanner::safetyCosts(int lane) {
@@ -118,10 +135,20 @@ double PathPlanner::safetyDistance(double speed_mps) {
 }
 
 double PathPlanner::wrappedDistance(double back_s, double front_s) {
-  double distance = fabs(front_s - back_s);
-  if (distance > TRACK_LENGTH_M / 2) {
-    distance = TRACK_LENGTH_M - distance;
+  double distance = (front_s - back_s + TRACK_LENGTH_M) - TRACK_LENGTH_M;
+
+  if (distance < 0) {
+    distance = TRACK_LENGTH_M + distance;
   }
+//  if (distance >= 0) {
+//    if (distance > TRACK_LENGTH_M / 2) {
+//      distance = TRACK_LENGTH_M - distance;
+//    }
+//  } else {
+//
+//  if (fabs(distance) > TRACK_LENGTH_M / 2) {
+//    distance = TRACK_LENGTH_M - distance;
+//  }
   return distance;
 }
 
@@ -141,9 +168,8 @@ json PathPlanner::path() {
 
   bool too_close = false;
 
-  // find ref_v to use
   for (Vehicle vehicle : vehicles) {
-    if (vehicle.lane == ego.lane) {
+    if ((vehicle.lane == ego.lane) || (vehicle.lane == lane)) { // check the current lane and the destination lane
       double check_speed = vehicle.speed;
       double check_car_s = vehicle.s;
 
@@ -156,20 +182,24 @@ json PathPlanner::path() {
       double wrapped_distance = wrappedDistance(car_s, check_car_s);
       if (wrapped_distance < safetyDistance(ego.speed)) {
         int fastest_lane = fastestLane();
-        if (ego.lane != fastest_lane) {
-           std::cout << "Faster Lane: " << fastest_lane << std::endl;
-        }
+//        if (ego.lane != fastest_lane) {
+//           std::cout << "Faster Lane: " << fastest_lane << std::endl;
+//        }
         if (lane == ego.lane) {
           // car has reached new lane
           if (fastest_lane > lane) {
             // change lane if change is safe
             if (safetyCosts(lane + 1) < 0.2) {
               lane += 1;
+            } else {
+              std::cout << "Changing to " << fastest_lane << ". Waiting for car to clear safety range in lane " << lane + 1 << std::endl;
             }
           } else if (fastest_lane < lane) {
             // change lane if change is safe
             if (safetyCosts(lane - 1) < 0.2) {
               lane -= 1;
+            } else {
+              std::cout << "Changing to " << fastest_lane << ". Waiting for car to clear safety range in lane " << lane - 1 << std::endl;
             }
           }
         }
