@@ -22,7 +22,7 @@ The project consists of the following files:
 
 # Description of the Path Planner
 The path planner is initialized by the main.cpp with the map of the highway.
-Based on the data from the simulator, the path planner creates an instance of the ego vehicle and the surrounding vehicles based on information from sensor fusion.
+Based on the data from the simulator, the path planner creates an instance of the ego vehicle and the surrounding vehicles.
 
 ## Behavior
 The default behavior of the ego vehicle is to stay in its lane with the maximum speed (49.5 miles per hour). In case the prediction detects that the ego vehicle will get to close to a vehicle that is driving in front of the vehicle in the same lane, it has the following options (see PathPlanner::path()):
