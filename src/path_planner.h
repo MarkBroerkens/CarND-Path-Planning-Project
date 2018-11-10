@@ -55,7 +55,6 @@ public:
     double centerLaneD(int lane);
     double safetyCosts(int lane);
     double wrappedDistance(double s1, double s2);
-    vector<Vehicle> vehiclesInFrontInLane(int lane);
 };
 
 

@@ -59,19 +59,6 @@ double PathPlanner::laneSpeed(int lane) {
   return lane_speed;
 }
 
-vector<Vehicle> PathPlanner::vehiclesInFrontInLane(int lane) {
-  vector<Vehicle> vehicles_in_lane;
-  for (Vehicle vehicle : vehicles) {
-    if (vehicle.lane == lane) {
-      vehicles_in_lane.push_back(vehicle);
-    }
-  }
-  std::sort( vehicles_in_lane.begin( ), vehicles_in_lane.end( ), [ ]( const Vehicle& lhs, const Vehicle& rhs )
-  {
-     return wrappedDistance(ego.s, lhs.s) < wrappedDistance(ego.s, rhs.s);
-  });
-  return vehicles_in_lane;
-}
 
 double PathPlanner::safetyCosts(int lane) {
   // find vehicles in the lane that might cause trouble
