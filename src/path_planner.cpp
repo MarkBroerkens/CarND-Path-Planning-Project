@@ -48,8 +48,6 @@ double PathPlanner::laneSpeed(int lane) {
     if (vehicle.lane == lane) {
       double distance_to_vehicle_ahead = wrappedDistance(ego.s, vehicle.s);
       double distance_to_vehicle_behind = wrappedDistance(vehicle.s, ego.s);
-      //std::cout << "distance front: " << distance_to_vehicle_ahead << std::endl;
-      //std::cout << "distance back: " << distance_to_vehicle_behind << std::endl;
       if (((distance_to_vehicle_ahead < FRONT_SENSOR_RANGE_M) || (distance_to_vehicle_behind < 10))
           && (vehicle.speed < lane_speed)) {
         lane_speed = vehicle.speed;
@@ -79,23 +77,6 @@ double PathPlanner::safetyCosts(int lane) {
 int PathPlanner::fastestLane() {
   int fastest_lane = ego.lane;
   double fastest_speed = laneSpeed(fastest_lane);
-
-//  int lane_up = ego.lane + 1;
-//  if (lane_up < NUMBER_OF_LANES) {
-//    double lane_speed = laneSpeed(lane_up);
-//    if (lane_speed > fastest_speed) {
-//      fastest_speed = lane_speed;
-//      fastest_lane = lane_up;
-//    }
-//  }
-//  int lane_down = ego.lane - 1;
-//  if (lane_down >= 0) {
-//    double lane_speed = laneSpeed(lane_down);
-//    if (lane_speed > fastest_speed) {
-//      fastest_speed = lane_speed;
-//      fastest_lane = lane_down;
-//    }
-//  }
 
   for (int lane = 0; lane < NUMBER_OF_LANES; lane++) {
     double lane_speed = laneSpeed(lane);
@@ -127,15 +108,6 @@ double PathPlanner::wrappedDistance(double back_s, double front_s) {
   if (distance < 0) {
     distance = TRACK_LENGTH_M + distance;
   }
-//  if (distance >= 0) {
-//    if (distance > TRACK_LENGTH_M / 2) {
-//      distance = TRACK_LENGTH_M - distance;
-//    }
-//  } else {
-//
-//  if (fabs(distance) > TRACK_LENGTH_M / 2) {
-//    distance = TRACK_LENGTH_M - distance;
-//  }
   return distance;
 }
 
@@ -160,18 +132,11 @@ json PathPlanner::path() {
       double check_speed = vehicle.speed;
       double check_car_s = vehicle.s;
 
-      //std::cout << "ego s " << car_s << std::endl;
-      //std::cout << "prev_size " << prev_size << std::endl;
-      //std::cout << "vehicle s " << check_car_s << std::endl;
-      check_car_s += ((double) prev_size * 0.02 * check_speed);
-      //std::cout << "vehicle s2 " << check_car_s << std::endl;
+      check_car_s += ((double) prev_size * TICK_S * check_speed);
 
       double wrapped_distance = wrappedDistance(car_s, check_car_s);
       if (wrapped_distance < safetyDistance(ego.speed)) {
         int fastest_lane = fastestLane();
-//        if (ego.lane != fastest_lane) {
-//           std::cout << "Faster Lane: " << fastest_lane << std::endl;
-//        }
         if (lane == ego.lane) {
           // car has reached new lane
           if (fastest_lane > lane) {
