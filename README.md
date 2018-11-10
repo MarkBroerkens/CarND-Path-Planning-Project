@@ -71,7 +71,7 @@ double PathPlanner::laneSpeed(int lane) {
 }
 ```
 
-Now we can iterate over all lanes and select identify the fastest lane. If several lanes allow the same speed, the lane that is closest to the ego vehicle is chosen. This helps avoiding unnecessary lane changes.
+In order to select the fastest lane, we iterate over all lanes and select the fastest lane. If several lanes allow the same fastest speed, the lane that is closest to the ego vehicle is chosen. This helps avoiding unnecessary lane changes.
 
 ```cpp
 int PathPlanner::fastestLane() {
