@@ -1,5 +1,19 @@
-# CarND-Path-Planning-Project
-Self-Driving Car Engineer Nanodegree Program
+[![Udacity - Self-Driving Car Engineer Nanodegree Program](https://s3.amazonaws.com/udacity-sdc/github/shield-carnd.svg)](http://www.udacity.com/drive)
+
+# Overview
+The goal of this project is to safely navigate around a virtual highway with other traffic that is driving +-10 MPH of the 50 MPH speed limit. 
+A path planner gets the localization of the car and sensor fusion data from a simulator. A map is available that lists the waypoints around the highway. 
+The car should try to go as close as possible to the 50 MPH speed limit, which means passing slower traffic when possible. The car should avoid hitting other cars at all cost as well as driving inside of the marked road lanes at all times, unless going from one lane to another. The car should be able to make one complete loop around the 6946m highway. Since the car is trying to go 50 MPH, it should take a little over 5 minutes to complete 1 loop. Also the car should not experience total acceleration over 10 m/s^2 and jerk that is greater than 10 m/s^3.
+
+
+The following image shows successful navigation around the virtual highway for more that 40 miles.
+![Driving](images/20181110_simulator_40miles.png)
+
+Safe lane changes are implemented as shown in the video.
+[![White Line](https://img.youtube.com/vi/K8GEIQsaB_I/0.jpg)](https://www.youtube.com/watch?v=K8GEIQsaB_I)
+
+
+*the description below is Udacity's original README for the project repo*
    
 ### Simulator.
 You can download the Term3 Simulator which contains the Path Planning Project from the [releases tab (https://github.com/udacity/self-driving-car-sim/releases/tag/T3_v1.2).
